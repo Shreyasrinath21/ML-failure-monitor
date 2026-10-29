@@ -32,6 +32,10 @@ npm start
 
 Open <http://localhost:3000>. Click **Run prediction** to score the example telemetry. Click **Simulate drift** to generate a shifted batch and alert. **Reset demo** clears the local monitoring history. You can also start without running the trainer: the server trains and writes a starter model if `data/model.json` is missing.
 
+### Deploy on Vercel
+
+Import the GitHub repository as a Vercel project. The static dashboard is served from `public/`, and `/api/*` requests are routed to the Node.js function in `api/index.js`. No API key or environment variable is required. For this demo, mutable monitoring and model files use Vercel's temporary function storage and can reset when a function instance is recycled; use an external database for durable, shared production data.
+
 ## REST API
 
 `GET /api/health` reports service status and model version. `GET /api/metrics` returns KPIs, PSI drift history, incidents, batches, calibration and recent predictions. `GET /api/model` returns held-out evaluation and registry details. `GET /api/export/predictions.csv` exports prediction history. `POST /api/predict` accepts JSON and returns a risk score. `POST /api/batch/score` accepts `{"rows":[...]}` with up to 5,000 telemetry rows; `/api/export/batch/<id>.csv` downloads its results. `POST /api/agent/triage` accepts `{"prediction_id":"<id>"}` and returns the explainable incident report and tool trace. Example prediction:

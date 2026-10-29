@@ -6,9 +6,10 @@ import {makeTelemetry,fit,predict,FEATURES} from './model.js';
 import {trainModel,trainFeedbackCandidate,promoteModel} from './trainer.js';
 import {runIncidentAgent} from './agent.js';
 import {readStore,writeStore} from './store.js';
+import {projectRoot,dataDir} from './data-path.js';
 
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const dataRoot=path.join(root,'data'),modelPath=path.join(dataRoot,'model.json');
+const root=projectRoot;
+const dataRoot=dataDir,modelPath=path.join(dataRoot,'model.json');
 let model;try{model=JSON.parse(fs.readFileSync(modelPath,'utf8'))}catch{model=fit(makeTelemetry(Math.random,2500));fs.mkdirSync(dataRoot,{recursive:true});fs.writeFileSync(modelPath,JSON.stringify(model,null,2))}
 const saved=readStore();
 let store={predictions:[],alerts:[],feedback:[],batch_jobs:[],drift_snapshots:[],drift_streaks:{},drift_alerted_at:{},settings:{low:.35,high:.65,monitoring_enabled:false,monitoring_interval_seconds:60,monitoring_simulate_drift:false},...saved};
@@ -32,9 +33,13 @@ function csvCell(x){const s=String(x??'');return/[",\r\n]/.test(s)?`"${s.replace
 function csvPredictions(records){const fields=['id','timestamp','model_version','risk','probability','observed_failure',...FEATURES],lines=[fields.join(',')];for(const p of records){const label=store.feedback.find(x=>x.id===p.id);lines.push([p.id,p.timestamp,p.model_version||'',p.risk,p.probability,label?label.failure:'',...FEATURES.map(k=>p.input[k])].map(csvCell).join(','))}return lines.join('\n')}
 function monitorTick(){if(!store.settings.monitoring_enabled)return;const interval=store.settings.monitoring_interval_seconds*1000;if(Date.now()-(Date.parse(store.settings.monitoring_last_run||'1970-01-01'))<interval)return;let rows=makeTelemetry(Math.random,20);if(store.settings.monitoring_simulate_drift)rows=rows.map(r=>({...r,latency_ms:r.latency_ms+170,error_rate:Math.min(.5,r.error_rate+.07),drift_score:Math.min(1,r.drift_score+.25)}));for(const r of rows)scoreInput(Object.fromEntries(FEATURES.map(k=>[k,r[k]])),'scheduled_monitor');const snapshot=recordDriftSnapshot('scheduled_monitor');store.settings.monitoring_last_run=new Date().toISOString();store.settings.monitoring_generated=(store.settings.monitoring_generated||0)+rows.length;store.settings.monitoring_last_snapshot=snapshot.timestamp;writeStore(store)}
 
-const server=http.createServer(async(req,res)=>{
+async function handler(req,res){
   if(req.method==='OPTIONS'){res.writeHead(204,{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'Content-Type'});return res.end()}
   const url=new URL(req.url,'http://localhost');
+  if(process.env.VERCEL&&url.pathname==='/api/index'){
+    const route=url.searchParams.get('path');
+    if(route){url.pathname=`/api/${route}`;url.searchParams.delete('path')}
+  }
   if(url.pathname.startsWith('/api/')){
     if(req.method==='GET'&&url.pathname==='/api/health')return json(res,200,{status:'ok',service:'ml-failure-monitor',model_version:model.version});
     if(req.method==='GET'&&url.pathname==='/api/metrics')return json(res,200,summarize());
@@ -75,7 +80,11 @@ const server=http.createServer(async(req,res)=>{
   const pathname=url.pathname==='/'?'/index.html':url.pathname,publicRoot=path.join(root,'public'),filename=path.resolve(publicRoot,path.normalize(pathname).replace(/^[/\\]+/,'')),relative=path.relative(publicRoot,filename);
   if(!relative||relative.startsWith('..')||path.isAbsolute(relative)){res.writeHead(403);return res.end('Forbidden')}if(!fs.existsSync(filename)||!fs.statSync(filename).isFile()){res.writeHead(404);return res.end('Not found')}
   const ext=path.extname(filename);res.writeHead(200,{'Content-Type':({'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json','.svg':'image/svg+xml'})[ext]||'application/octet-stream'});const stream=fs.createReadStream(filename);stream.on('error',()=>{if(!res.headersSent)res.writeHead(404);res.end('Not found')});stream.pipe(res)
-});
-function bodyJSON(req){return new Promise((resolve,reject)=>{let s='';req.on('data',x=>s+=x);req.on('end',()=>{try{resolve(JSON.parse(s||'{}'))}catch(e){reject(e)}});req.on('error',reject)})}
-setInterval(monitorTick,1000).unref();
-const port=Number(process.env.PORT)||3000;server.listen(port,'0.0.0.0',()=>console.log(`ModelGuard running at http://localhost:${port}`));
+}
+function bodyJSON(req){
+  if(req.body!==undefined){try{return Promise.resolve(typeof req.body==='string'?JSON.parse(req.body||'{}'):req.body??{})}catch(e){return Promise.reject(e)}}
+  return new Promise((resolve,reject)=>{let s='';req.on('data',x=>s+=x);req.on('end',()=>{try{resolve(JSON.parse(s||'{}'))}catch(e){reject(e)}});req.on('error',reject)})
+}
+const directRun=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);
+if(directRun){setInterval(monitorTick,1000).unref();const server=http.createServer(handler),port=Number(process.env.PORT)||3000;server.listen(port,'0.0.0.0',()=>console.log(`ModelGuard running at http://localhost:${port}`))}
+export {handler};

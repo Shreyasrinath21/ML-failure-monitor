@@ -1,9 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import {fileURLToPath} from 'node:url';
 import {makeTelemetry,fit,predict,FEATURES} from './model.js';
+import {dataDir} from './data-path.js';
 
-const dataDir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','data');
 const registryFile=()=>path.join(dataDir,'registry.json');
 function readRegistry(){try{return JSON.parse(fs.readFileSync(registryFile(),'utf8'))}catch{return[]}}
 function nextVersion(registry){const prev=registry.at(-1)?.version;if(!prev)return'1.0.0';const[a,b]=prev.split('.').map(Number);return`${a}.${b+1}.0`}
