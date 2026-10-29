@@ -1,0 +1,101 @@
+[
+  {
+    "version": "1.0.0",
+    "trained_at": "2026-10-29T06:56:58.801Z",
+    "samples": 2400,
+    "artifact": "model-v1.0.0.json",
+    "evaluation": {
+      "accuracy": 0.8516666666666667,
+      "precision": 0.9939024390243902,
+      "recall": 0.649402390438247,
+      "f1": 0.7855421686746988,
+      "confusion_matrix": {
+        "true_positive": 163,
+        "false_positive": 1,
+        "false_negative": 88,
+        "true_negative": 348
+      },
+      "test_samples": 600,
+      "split": "80/20"
+    },
+    "current": false
+  },
+  {
+    "version": "1.1.0",
+    "trained_at": "2026-10-29T06:57:19.213Z",
+    "samples": 2400,
+    "artifact": "model-v1.1.0.json",
+    "evaluation": {
+      "accuracy": 0.8466666666666667,
+      "precision": 0.9940476190476191,
+      "recall": 0.6472868217054264,
+      "f1": 0.784037558685446,
+      "confusion_matrix": {
+        "true_positive": 167,
+        "false_positive": 1,
+        "false_negative": 91,
+        "true_negative": 341
+      },
+      "test_samples": 600,
+      "split": "80/20"
+    },
+    "current": false,
+    "status": "ARCHIVED"
+  },
+  {
+    "version": "1.2.0",
+    "trained_at": "2026-10-29T07:15:52.798Z",
+    "samples": 64,
+    "artifact": "model-v1.2.0.json",
+    "evaluation": {
+      "accuracy": 1,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "brier_score": 0.000006053406695424391,
+      "confusion_matrix": {
+        "true_positive": 7,
+        "false_positive": 0,
+        "false_negative": 0,
+        "true_negative": 9
+      },
+      "test_samples": 16,
+      "split": "80/20"
+    },
+    "current": false,
+    "status": "ARCHIVED",
+    "comparison": {
+      "current_version": "1.1.0",
+      "current_f1": 1,
+      "candidate_f1": 1,
+      "current_accuracy": 1,
+      "candidate_accuracy": 1,
+      "delta_f1": 0,
+      "recommendation": "READY FOR REVIEW"
+    }
+  },
+  {
+    "version": "1.3.0",
+    "trained_at": "2026-10-29T07:31:39.125Z",
+    "samples": 2400,
+    "artifact": "model-v1.3.0.json",
+    "evaluation": {
+      "accuracy": 0.835,
+      "precision": 0.9868421052631579,
+      "recall": 0.6072874493927125,
+      "f1": 0.7518796992481203,
+      "brier_score": 0.1269762659951604,
+      "confusion_matrix": {
+        "true_positive": 150,
+        "false_positive": 2,
+        "false_negative": 97,
+        "true_negative": 351
+      },
+      "test_samples": 600,
+      "split": "80/20"
+    },
+    "current": true,
+    "status": "ACTIVE",
+    "comparison": null
+  }
+]

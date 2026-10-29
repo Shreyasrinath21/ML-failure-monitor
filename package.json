@@ -1,0 +1,9 @@
+{
+  "name": "ml-failure-monitor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "End-to-end MLOps demo for predicting and monitoring ML service failures",
+  "type": "module",
+  "scripts": { "start": "node src/server.js", "test": "node --test", "train": "node src/train.js" },
+  "engines": { "node": ">=20" }
+}

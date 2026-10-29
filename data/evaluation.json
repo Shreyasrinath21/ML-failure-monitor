@@ -1,0 +1,15 @@
+{
+  "accuracy": 0.835,
+  "precision": 0.9868421052631579,
+  "recall": 0.6072874493927125,
+  "f1": 0.7518796992481203,
+  "brier_score": 0.1269762659951604,
+  "confusion_matrix": {
+    "true_positive": 150,
+    "false_positive": 2,
+    "false_negative": 97,
+    "true_negative": 351
+  },
+  "test_samples": 600,
+  "split": "80/20"
+}
