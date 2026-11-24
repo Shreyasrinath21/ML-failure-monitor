@@ -8,8 +8,8 @@ export function runIncidentAgent({prediction,model,drift,alerts}){
   const trace=[];
   const inspectEvent=()=>{const result={id:prediction.id,model_version:prediction.model_version||model.version,risk:prediction.risk,probability:prediction.probability,telemetry:prediction.input};trace.push({tool:'inspect_prediction',purpose:'Load the selected prediction and telemetry',result:`${result.risk} risk at ${(result.probability*100).toFixed(1)}%`});return result};
   const event=inspectEvent();
-  const contributions=FEATURES.map((feature,i)=>({feature,label:TITLES[feature],value:event.telemetry[feature],baseline:model.means[i],contribution:((event.telemetry[feature]-model.means[i])/model.scales[i])*model.weights[i]})).sort((a,b)=>b.contribution-a.contribution);
-  trace.push({tool:'explain_model_score',purpose:'Rank standardized feature contributions to the logistic regression score',result:`Largest positive driver: ${TITLES[contributions[0].feature]} (+${contributions[0].contribution.toFixed(2)} log-odds)`});
+  const contributions=FEATURES.map((feature,i)=>{const shap_value=((event.telemetry[feature]-model.means[i])/(model.scales[i]||1))*model.weights[i];return{feature,label:TITLES[feature],value:event.telemetry[feature],baseline:model.means[i],contribution:shap_value,shap_value}}).sort((a,b)=>b.contribution-a.contribution);
+  trace.push({tool:'explain_model_score',purpose:'Calculate exact linear-model SHAP contributions in log-odds space using an independent-feature background assumption',result:`Largest positive driver: ${TITLES[contributions[0].feature]} (+${contributions[0].contribution.toFixed(2)} log-odds)`});
   const shifted=drift.filter(x=>x.psi!==null&&x.psi>=.1).sort((a,b)=>b.psi-a.psi);
   trace.push({tool:'inspect_feature_drift',purpose:'Check production features against training bins using PSI',result:shifted.length?`${shifted.length} feature(s) above PSI 0.10; highest ${TITLES[shifted[0].feature]} (${shifted[0].psi.toFixed(2)})`:'No monitored feature exceeds PSI 0.10'});
   const open=alerts.filter(a=>!a.acknowledged);
@@ -26,5 +26,5 @@ export function runIncidentAgent({prediction,model,drift,alerts}){
   const severity=event.risk==='HIGH'?'Elevated':event.risk==='MEDIUM'?'Guarded':'Routine';
   const summary=`${severity} failure risk (${(event.probability*100).toFixed(1)}%). ${top.length?`Primary model signals: ${top.map(x=>TITLES[x.feature]).join(', ')}.`:'No feature has a strong positive contribution.'} ${shifted.length?`${shifted.length} feature distribution(s) also show drift.`:'No significant feature drift was detected.'}`;
   trace.push({tool:'build_investigation_plan',purpose:'Select and order safe runbook steps using model and monitoring evidence',result:`${plan.length} recommended step(s); no external action was taken`});
-  return{agent:'ModelGuard Incident Triage Agent',mode:'local explainable tool workflow',created_at:new Date().toISOString(),prediction:event,summary,drivers:contributions,drift:shifted,open_alerts:open.slice(0,10),plan,trace,guardrail:'Recommendations only. The agent does not alter services, models, or alerts.'};
+  return{agent:'ModelGuard Incident Triage Agent',mode:'local explainable tool workflow',created_at:new Date().toISOString(),prediction:event,summary,drivers:contributions,explanation:{method:'Linear-model SHAP',output_space:'log-odds',expected_value:model.bias,independence_assumption:true},drift:shifted,open_alerts:open.slice(0,10),plan,trace,guardrail:'Recommendations only. The agent does not alter services, models, or alerts.'};
 }
