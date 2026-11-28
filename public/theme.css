@@ -1,0 +1,155 @@
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #171519;
+  --surface: #242126;
+  --ink: #f0e9e9;
+  --muted: #b4a8ad;
+  --line: #40373d;
+  --blue: #d395a8;
+  --blue-dark: #bd758d;
+  --green: #8fc49b;
+  --red: #ee9298;
+  --amber: #dfbc79;
+  --nav: #24151d;
+}
+
+html[data-theme="dark"] body,
+html[data-theme="dark"] main {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .sidebar {
+  background: linear-gradient(180deg, #321b27 0%, #21151c 100%);
+}
+
+html[data-theme="dark"] .welcome {
+  background: linear-gradient(110deg, #29242a, #30262b);
+  border-color: var(--line);
+}
+
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .secondary,
+html[data-theme="dark"] .ack-button,
+html[data-theme="dark"] .tiny,
+html[data-theme="dark"] select,
+html[data-theme="dark"] .field input,
+html[data-theme="dark"] .threshold-form input {
+  background-color: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+html[data-theme="dark"] .secondary:hover,
+html[data-theme="dark"] .tiny:hover {
+  border-color: var(--blue);
+  color: #f3c6d2;
+}
+
+html[data-theme="dark"] :is(h1, h2, h3, .metric, .detail-row b, .registry-item b,
+  .endpoint-list b, .model-chip b, .version-pill b, .matrix b, .system-health b) {
+  color: var(--ink);
+}
+
+html[data-theme="dark"] :is(.breadcrumb, .breadcrumb b, .page-intro p, .panel-head p,
+  .table-toolbar p, .card-label, .hint, .legend, .field label, .threshold-form label,
+  .table-foot, .empty, .drift-name, .drift-value, .alert-copy, .endpoint-list span,
+  .detail-row, .registry-item, .formfooter, .live, .model-chip, .version-pill) {
+  color: var(--muted);
+}
+
+html[data-theme="dark"] th,
+html[data-theme="dark"] .registry-head {
+  background: #302b31;
+  color: var(--muted);
+  border-color: var(--line);
+}
+
+html[data-theme="dark"] td,
+html[data-theme="dark"] .activity,
+html[data-theme="dark"] .detail-row,
+html[data-theme="dark"] .endpoint-list > div,
+html[data-theme="dark"] .registry-item,
+html[data-theme="dark"] .table-toolbar,
+html[data-theme="dark"] .formfooter {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+html[data-theme="dark"] tbody tr:hover,
+html[data-theme="dark"] .matrix div {
+  background: #302b31;
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .matrix .matrix-head,
+html[data-theme="dark"] .pill,
+html[data-theme="dark"] .model-chip,
+html[data-theme="dark"] .version-pill {
+  background: #302b31;
+  color: var(--muted);
+  border-color: var(--line);
+}
+
+html[data-theme="dark"] .notice {
+  background: #292a25;
+  border-color: #454438;
+  color: #c8c4ae;
+}
+
+html[data-theme="dark"] .green,
+html[data-theme="dark"] .badge.green,
+html[data-theme="dark"] .risk-tag.low,
+html[data-theme="dark"] .registry-status.current {
+  background: #26382d;
+  color: #a8d6b1;
+}
+
+html[data-theme="dark"] .badge.red,
+html[data-theme="dark"] .risk-tag.high,
+html[data-theme="dark"] .result.high,
+html[data-theme="dark"] .toast-error {
+  background: #452a30;
+  color: #f0a6aa;
+}
+
+html[data-theme="dark"] .risk-tag.medium,
+html[data-theme="dark"] .result.medium,
+html[data-theme="dark"] .result.warning,
+html[data-theme="dark"] .severity {
+  background: #403626;
+  color: #e5c789;
+}
+
+html[data-theme="dark"] .endpoint-list code {
+  background: #3a2830;
+  color: #e5a8ba;
+}
+
+html[data-theme="dark"] .drift-track,
+html[data-theme="dark"] .coef-track,
+html[data-theme="dark"] .calibration-track {
+  background: #383239;
+}
+
+html[data-theme="dark"] footer {
+  color: #9f9299;
+}
+
+.theme-toggle {
+  width: 100%;
+  margin: 0 0 10px;
+  text-align: left;
+}
+
+.sidebar .theme-toggle {
+  background: #35232b;
+  border-color: #684452;
+  color: #f3e8eb;
+}
+
+.sidebar .theme-toggle:hover {
+  border-color: #d6af87;
+  color: #fffaf2;
+}
